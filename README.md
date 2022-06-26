@@ -18,7 +18,7 @@ It builds on top of the Compound model with the improvement on capital efficienc
 ## Contract Structures
 
 - gToken.sol
-- Comptroller.sol
+- Guptroller.sol
 
 # Etherscan verification
 
