@@ -69,7 +69,7 @@ contract GuptrollerV2Storage is GuptrollerV1Storage {
         mapping(address => bool) accountMembership;
 
         // Whether or not this market receives COMP
-        bool isComped;
+        bool isGuped;
     }
 
     /**
@@ -94,7 +94,7 @@ contract GuptrollerV2Storage is GuptrollerV1Storage {
 }
 
 contract GuptrollerV3Storage is GuptrollerV2Storage {
-    struct CompMarketState {
+    struct GupMarketState {
         // The market's last updated compBorrowIndex or compSupplyIndex
         uint224 index;
 
@@ -112,10 +112,10 @@ contract GuptrollerV3Storage is GuptrollerV2Storage {
     mapping(address => uint) public compSpeeds;
 
     /// @notice The COMP market supply state for each market
-    mapping(address => CompMarketState) public compSupplyState;
+    mapping(address => GupMarketState) public compSupplyState;
 
     /// @notice The COMP market borrow state for each market
-    mapping(address => CompMarketState) public compBorrowState;
+    mapping(address => GupMarketState) public compBorrowState;
 
     /// @notice The COMP borrow index for each market for each supplier as of the last time they accrued COMP
     mapping(address => mapping(address => uint)) public compSupplierIndex;

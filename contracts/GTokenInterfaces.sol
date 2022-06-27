@@ -230,14 +230,14 @@ abstract contract GTokenInterface is GTokenStorage {
     function _setInterestRateModel(InterestRateModel newInterestRateModel) virtual external returns (uint);
 }
 
-contract CErc20Storage {
+contract  GErc20Storage {
     /**
      * @notice Underlying asset for this GToken
      */
     address public underlying;
 }
 
-abstract contract CErc20Interface is CErc20Storage {
+abstract contract  GErc20Interface is  GErc20Storage {
 
     /*** User Interface ***/
 

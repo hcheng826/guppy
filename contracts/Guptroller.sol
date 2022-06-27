@@ -10,8 +10,8 @@ import "./Unitroller.sol";
 import "./Governance/Gup.sol";
 
 /**
- * @title Compound's Guptroller Contract
- * @author Compound
+ * @title Gupound's Guptroller Contract
+ * @author Gupound
  */
 contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerErrorReporter, ExponentialNoError {
     /// @notice Emitted when an admin supports a market
@@ -45,19 +45,19 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
     event ActionPaused(GToken gToken, string action, bool pauseState);
 
     /// @notice Emitted when a new borrow-side COMP speed is calculated for a market
-    event CompBorrowSpeedUpdated(GToken indexed gToken, uint newSpeed);
+    event GupBorrowSpeedUpdated(GToken indexed gToken, uint newSpeed);
 
     /// @notice Emitted when a new supply-side COMP speed is calculated for a market
-    event CompSupplySpeedUpdated(GToken indexed gToken, uint newSpeed);
+    event GupSupplySpeedUpdated(GToken indexed gToken, uint newSpeed);
 
     /// @notice Emitted when a new COMP speed is set for a contributor
-    event ContributorCompSpeedUpdated(address indexed contributor, uint newSpeed);
+    event ContributorGupSpeedUpdated(address indexed contributor, uint newSpeed);
 
     /// @notice Emitted when COMP is distributed to a supplier
-    event DistributedSupplierComp(GToken indexed gToken, address indexed supplier, uint compDelta, uint compSupplyIndex);
+    event DistributedSupplierGup(GToken indexed gToken, address indexed supplier, uint compDelta, uint compSupplyIndex);
 
     /// @notice Emitted when COMP is distributed to a borrower
-    event DistributedBorrowerComp(GToken indexed gToken, address indexed borrower, uint compDelta, uint compBorrowIndex);
+    event DistributedBorrowerGup(GToken indexed gToken, address indexed borrower, uint compDelta, uint compBorrowIndex);
 
     /// @notice Emitted when borrow cap for a gToken is changed
     event NewBorrowCap(GToken indexed gToken, uint newBorrowCap);
@@ -66,13 +66,13 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
     event NewBorrowCapGuardian(address oldBorrowCapGuardian, address newBorrowCapGuardian);
 
     /// @notice Emitted when COMP is granted by admin
-    event CompGranted(address recipient, uint amount);
+    event GupGranted(address recipient, uint amount);
 
     /// @notice Emitted when COMP accrued for a user has been manually adjusted.
-    event CompAccruedAdjusted(address indexed user, uint oldCompAccrued, uint newCompAccrued);
+    event GupAccruedAdjusted(address indexed user, uint oldGupAccrued, uint newGupAccrued);
 
     /// @notice Emitted when COMP receivable for a user has been updated.
-    event CompReceivableUpdated(address indexed user, uint oldCompReceivable, uint newCompReceivable);
+    event GupReceivableUpdated(address indexed user, uint oldGupReceivable, uint newGupReceivable);
 
     /// @notice The initial COMP index for a market
     uint224 public constant compInitialIndex = 1e36;
@@ -244,8 +244,8 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
         }
 
         // Keep the flywheel moving
-        updateCompSupplyIndex(gToken);
-        distributeSupplierComp(gToken, minter);
+        updateGupSupplyIndex(gToken);
+        distributeSupplierGup(gToken, minter);
 
         return uint(Error.NO_ERROR);
     }
@@ -284,8 +284,8 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
         }
 
         // Keep the flywheel moving
-        updateCompSupplyIndex(gToken);
-        distributeSupplierComp(gToken, redeemer);
+        updateGupSupplyIndex(gToken);
+        distributeSupplierGup(gToken, redeemer);
 
         return uint(Error.NO_ERROR);
     }
@@ -382,8 +382,8 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
 
         // Keep the flywheel moving
         Exp memory borrowIndex = Exp({mantissa: GToken(gToken).borrowIndex()});
-        updateCompBorrowIndex(gToken, borrowIndex);
-        distributeBorrowerComp(gToken, borrower, borrowIndex);
+        updateGupBorrowIndex(gToken, borrowIndex);
+        distributeBorrowerGup(gToken, borrower, borrowIndex);
 
         return uint(Error.NO_ERROR);
     }
@@ -430,8 +430,8 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
 
         // Keep the flywheel moving
         Exp memory borrowIndex = Exp({mantissa: GToken(gToken).borrowIndex()});
-        updateCompBorrowIndex(gToken, borrowIndex);
-        distributeBorrowerComp(gToken, borrower, borrowIndex);
+        updateGupBorrowIndex(gToken, borrowIndex);
+        distributeBorrowerGup(gToken, borrower, borrowIndex);
 
         return uint(Error.NO_ERROR);
     }
@@ -566,9 +566,9 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
         }
 
         // Keep the flywheel moving
-        updateCompSupplyIndex(gTokenCollateral);
-        distributeSupplierComp(gTokenCollateral, borrower);
-        distributeSupplierComp(gTokenCollateral, liquidator);
+        updateGupSupplyIndex(gTokenCollateral);
+        distributeSupplierGup(gTokenCollateral, borrower);
+        distributeSupplierGup(gTokenCollateral, liquidator);
 
         return uint(Error.NO_ERROR);
     }
@@ -620,9 +620,9 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
         }
 
         // Keep the flywheel moving
-        updateCompSupplyIndex(gToken);
-        distributeSupplierComp(gToken, src);
-        distributeSupplierComp(gToken, dst);
+        updateGupSupplyIndex(gToken);
+        distributeSupplierGup(gToken, src);
+        distributeSupplierGup(gToken, dst);
 
         return uint(Error.NO_ERROR);
     }
@@ -940,10 +940,10 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
 
         gToken.isGToken(); // Sanity check to make sure its really a GToken
 
-        // Note that isComped is not in active use anymore
+        // Note that isGuped is not in active use anymore
         Market storage newMarket = markets[address(gToken)];
         newMarket.isListed = true;
-        newMarket.isComped = false;
+        newMarket.isGuped = false;
         newMarket.collateralFactorMantissa = 0;
 
         _addMarketInternal(address(gToken));
@@ -964,8 +964,8 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
     function _initializeMarket(address gToken) internal {
         uint32 blockNumber = safe32(getBlockNumber(), "block number exceeds 32 bits");
 
-        CompMarketState storage supplyState = compSupplyState[gToken];
-        CompMarketState storage borrowState = compBorrowState[gToken];
+        GupMarketState storage supplyState = compSupplyState[gToken];
+        GupMarketState storage borrowState = compBorrowState[gToken];
 
         /*
          * Update market state indices
@@ -1120,7 +1120,7 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
                 // Accounting: record the COMP debt for the user
                 compReceivable[user] = newReceivable;
 
-                emit CompReceivableUpdated(user, oldReceivable, newReceivable);
+                emit GupReceivableUpdated(user, oldReceivable, newReceivable);
 
                 amountToSubtract = currentAccrual;
             }
@@ -1130,7 +1130,7 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
                 // Users will keep whatever they have correctly accrued.
                 compAccrued[user] = newAccrual = sub_(currentAccrual, amountToSubtract);
 
-                emit CompAccruedAdjusted(user, currentAccrual, newAccrual);
+                emit GupAccruedAdjusted(user, currentAccrual, newAccrual);
             }
         }
 
@@ -1144,7 +1144,7 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
         return msg.sender == admin || msg.sender == guptrollerImplementation;
     }
 
-    /*** Comp Distribution ***/
+    /*** Gup Distribution ***/
 
     /**
      * @notice Set COMP speed for a single market
@@ -1152,7 +1152,7 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
      * @param supplySpeed New supply-side COMP speed for market
      * @param borrowSpeed New borrow-side COMP speed for market
      */
-    function setCompSpeedInternal(GToken gToken, uint supplySpeed, uint borrowSpeed) internal {
+    function setGupSpeedInternal(GToken gToken, uint supplySpeed, uint borrowSpeed) internal {
         Market storage market = markets[address(gToken)];
         require(market.isListed, "comp market is not listed");
 
@@ -1160,11 +1160,11 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
             // Supply speed updated so let's update supply state to ensure that
             //  1. COMP accrued properly for the old speed, and
             //  2. COMP accrued at the new speed starts after this block.
-            updateCompSupplyIndex(address(gToken));
+            updateGupSupplyIndex(address(gToken));
 
             // Update speed and emit event
             compSupplySpeeds[address(gToken)] = supplySpeed;
-            emit CompSupplySpeedUpdated(gToken, supplySpeed);
+            emit GupSupplySpeedUpdated(gToken, supplySpeed);
         }
 
         if (compBorrowSpeeds[address(gToken)] != borrowSpeed) {
@@ -1172,11 +1172,11 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
             //  1. COMP accrued properly for the old speed, and
             //  2. COMP accrued at the new speed starts after this block.
             Exp memory borrowIndex = Exp({mantissa: gToken.borrowIndex()});
-            updateCompBorrowIndex(address(gToken), borrowIndex);
+            updateGupBorrowIndex(address(gToken), borrowIndex);
 
             // Update speed and emit event
             compBorrowSpeeds[address(gToken)] = borrowSpeed;
-            emit CompBorrowSpeedUpdated(gToken, borrowSpeed);
+            emit GupBorrowSpeedUpdated(gToken, borrowSpeed);
         }
     }
 
@@ -1185,8 +1185,8 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
      * @param gToken The market whose supply index to update
      * @dev Index is a cumulative sum of the COMP per gToken accrued.
      */
-    function updateCompSupplyIndex(address gToken) internal {
-        CompMarketState storage supplyState = compSupplyState[gToken];
+    function updateGupSupplyIndex(address gToken) internal {
+        GupMarketState storage supplyState = compSupplyState[gToken];
         uint supplySpeed = compSupplySpeeds[gToken];
         uint32 blockNumber = safe32(getBlockNumber(), "block number exceeds 32 bits");
         uint deltaBlocks = sub_(uint(blockNumber), uint(supplyState.block));
@@ -1206,8 +1206,8 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
      * @param gToken The market whose borrow index to update
      * @dev Index is a cumulative sum of the COMP per gToken accrued.
      */
-    function updateCompBorrowIndex(address gToken, Exp memory marketBorrowIndex) internal {
-        CompMarketState storage borrowState = compBorrowState[gToken];
+    function updateGupBorrowIndex(address gToken, Exp memory marketBorrowIndex) internal {
+        GupMarketState storage borrowState = compBorrowState[gToken];
         uint borrowSpeed = compBorrowSpeeds[gToken];
         uint32 blockNumber = safe32(getBlockNumber(), "block number exceeds 32 bits");
         uint deltaBlocks = sub_(uint(blockNumber), uint(borrowState.block));
@@ -1227,12 +1227,12 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
      * @param gToken The market in which the supplier is interacting
      * @param supplier The address of the supplier to distribute COMP to
      */
-    function distributeSupplierComp(address gToken, address supplier) internal {
+    function distributeSupplierGup(address gToken, address supplier) internal {
         // TODO: Don't distribute supplier COMP if the user is not in the supplier market.
-        // This check should be as gas efficient as possible as distributeSupplierComp is called in many places.
+        // This check should be as gas efficient as possible as distributeSupplierGup is called in many places.
         // - We really don't want to call an external contract as that's quite expensive.
 
-        CompMarketState storage supplyState = compSupplyState[gToken];
+        GupMarketState storage supplyState = compSupplyState[gToken];
         uint supplyIndex = supplyState.index;
         uint supplierIndex = compSupplierIndex[gToken][supplier];
 
@@ -1257,7 +1257,7 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
         uint supplierAccrued = add_(compAccrued[supplier], supplierDelta);
         compAccrued[supplier] = supplierAccrued;
 
-        emit DistributedSupplierComp(GToken(gToken), supplier, supplierDelta, supplyIndex);
+        emit DistributedSupplierGup(GToken(gToken), supplier, supplierDelta, supplyIndex);
     }
 
     /**
@@ -1266,12 +1266,12 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
      * @param gToken The market in which the borrower is interacting
      * @param borrower The address of the borrower to distribute COMP to
      */
-    function distributeBorrowerComp(address gToken, address borrower, Exp memory marketBorrowIndex) internal {
+    function distributeBorrowerGup(address gToken, address borrower, Exp memory marketBorrowIndex) internal {
         // TODO: Don't distribute supplier COMP if the user is not in the borrower market.
-        // This check should be as gas efficient as possible as distributeBorrowerComp is called in many places.
+        // This check should be as gas efficient as possible as distributeBorrowerGup is called in many places.
         // - We really don't want to call an external contract as that's quite expensive.
 
-        CompMarketState storage borrowState = compBorrowState[gToken];
+        GupMarketState storage borrowState = compBorrowState[gToken];
         uint borrowIndex = borrowState.index;
         uint borrowerIndex = compBorrowerIndex[gToken][borrower];
 
@@ -1296,7 +1296,7 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
         uint borrowerAccrued = add_(compAccrued[borrower], borrowerDelta);
         compAccrued[borrower] = borrowerAccrued;
 
-        emit DistributedBorrowerComp(GToken(gToken), borrower, borrowerDelta, borrowIndex);
+        emit DistributedBorrowerGup(GToken(gToken), borrower, borrowerDelta, borrowIndex);
     }
 
     /**
@@ -1320,8 +1320,8 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
      * @notice Claim all the comp accrued by holder in all markets
      * @param holder The address to claim COMP for
      */
-    function claimComp(address holder) public {
-        return claimComp(holder, allMarkets);
+    function claimGup(address holder) public {
+        return claimGup(holder, allMarkets);
     }
 
     /**
@@ -1329,10 +1329,10 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
      * @param holder The address to claim COMP for
      * @param gTokens The list of markets to claim COMP in
      */
-    function claimComp(address holder, GToken[] memory gTokens) public {
+    function claimGup(address holder, GToken[] memory gTokens) public {
         address[] memory holders = new address[](1);
         holders[0] = holder;
-        claimComp(holders, gTokens, true, true);
+        claimGup(holders, gTokens, true, true);
     }
 
     /**
@@ -1342,26 +1342,26 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
      * @param borrowers Whether or not to claim COMP earned by borrowing
      * @param suppliers Whether or not to claim COMP earned by supplying
      */
-    function claimComp(address[] memory holders, GToken[] memory gTokens, bool borrowers, bool suppliers) public {
+    function claimGup(address[] memory holders, GToken[] memory gTokens, bool borrowers, bool suppliers) public {
         for (uint i = 0; i < gTokens.length; i++) {
             GToken gToken = gTokens[i];
             require(markets[address(gToken)].isListed, "market must be listed");
             if (borrowers == true) {
                 Exp memory borrowIndex = Exp({mantissa: gToken.borrowIndex()});
-                updateCompBorrowIndex(address(gToken), borrowIndex);
+                updateGupBorrowIndex(address(gToken), borrowIndex);
                 for (uint j = 0; j < holders.length; j++) {
-                    distributeBorrowerComp(address(gToken), holders[j], borrowIndex);
+                    distributeBorrowerGup(address(gToken), holders[j], borrowIndex);
                 }
             }
             if (suppliers == true) {
-                updateCompSupplyIndex(address(gToken));
+                updateGupSupplyIndex(address(gToken));
                 for (uint j = 0; j < holders.length; j++) {
-                    distributeSupplierComp(address(gToken), holders[j]);
+                    distributeSupplierGup(address(gToken), holders[j]);
                 }
             }
         }
         for (uint j = 0; j < holders.length; j++) {
-            compAccrued[holders[j]] = grantCompInternal(holders[j], compAccrued[holders[j]]);
+            compAccrued[holders[j]] = grantGupInternal(holders[j], compAccrued[holders[j]]);
         }
     }
 
@@ -1372,8 +1372,8 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
      * @param amount The amount of COMP to (possibly) transfer
      * @return The amount of COMP which was NOT transferred to the user
      */
-    function grantCompInternal(address user, uint amount) internal returns (uint) {
-        Comp comp = Comp(getCompAddress());
+    function grantGupInternal(address user, uint amount) internal returns (uint) {
+        Gup comp = Gup(getGupAddress());
         uint compRemaining = comp.balanceOf(address(this));
         if (amount > 0 && amount <= compRemaining) {
             comp.transfer(user, amount);
@@ -1382,7 +1382,7 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
         return amount;
     }
 
-    /*** Comp Distribution Admin ***/
+    /*** Gup Distribution Admin ***/
 
     /**
      * @notice Transfer COMP to the recipient
@@ -1390,11 +1390,11 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
      * @param recipient The address of the recipient to transfer COMP to
      * @param amount The amount of COMP to (possibly) transfer
      */
-    function _grantComp(address recipient, uint amount) public {
+    function _grantGup(address recipient, uint amount) public {
         require(adminOrInitializing(), "only admin can grant comp");
-        uint amountLeft = grantCompInternal(recipient, amount);
+        uint amountLeft = grantGupInternal(recipient, amount);
         require(amountLeft == 0, "insufficient comp for grant");
-        emit CompGranted(recipient, amount);
+        emit GupGranted(recipient, amount);
     }
 
     /**
@@ -1403,14 +1403,14 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
      * @param supplySpeeds New supply-side COMP speed for the corresponding market.
      * @param borrowSpeeds New borrow-side COMP speed for the corresponding market.
      */
-    function _setCompSpeeds(GToken[] memory gTokens, uint[] memory supplySpeeds, uint[] memory borrowSpeeds) public {
+    function _setGupSpeeds(GToken[] memory gTokens, uint[] memory supplySpeeds, uint[] memory borrowSpeeds) public {
         require(adminOrInitializing(), "only admin can set comp speed");
 
         uint numTokens = gTokens.length;
-        require(numTokens == supplySpeeds.length && numTokens == borrowSpeeds.length, "Guptroller::_setCompSpeeds invalid input");
+        require(numTokens == supplySpeeds.length && numTokens == borrowSpeeds.length, "Guptroller::_setGupSpeeds invalid input");
 
         for (uint i = 0; i < numTokens; ++i) {
-            setCompSpeedInternal(gTokens[i], supplySpeeds[i], borrowSpeeds[i]);
+            setGupSpeedInternal(gTokens[i], supplySpeeds[i], borrowSpeeds[i]);
         }
     }
 
@@ -1419,7 +1419,7 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
      * @param contributor The contributor whose COMP speed to update
      * @param compSpeed New COMP speed for contributor
      */
-    function _setContributorCompSpeed(address contributor, uint compSpeed) public {
+    function _setContributorGupSpeed(address contributor, uint compSpeed) public {
         require(adminOrInitializing(), "only admin can set comp speed");
 
         // note that COMP speed could be set to 0 to halt liquidity rewards for a contributor
@@ -1432,7 +1432,7 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
         }
         compContributorSpeeds[contributor] = compSpeed;
 
-        emit ContributorCompSpeedUpdated(contributor, compSpeed);
+        emit ContributorGupSpeedUpdated(contributor, compSpeed);
     }
 
     /**
@@ -1465,7 +1465,7 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
      * @notice Return the address of the COMP token
      * @return The address of COMP
      */
-    function getCompAddress() virtual public view returns (address) {
+    function getGupAddress() virtual public view returns (address) {
         return 0xc00e94Cb662C3520282E6f5717214004A7f26888;
     }
 }
