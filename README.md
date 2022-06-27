@@ -1,33 +1,53 @@
-# Advanced Sample Hardhat Project
+# Guppy
 
-This project demonstrates an advanced Hardhat use case, integrating other tools commonly used alongside Hardhat in the
-ecosystem.
+Guppy is a project built on top of the Avalanche Platypus ecosystem. It allows the users who want to provide liquidity on Platypus to improve their captical efficiency. The deposited liquidity (stablecoins) can be served as collaterals and the user can borrow more stablecoins whlie the original deposited asset still earning rewards.
 
-The project comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an
-example of a task implementation, which simply lists the available accounts. It also comes with a variety of other
-tools, preconfigured to work with the project code.
+It builds on top of the Compound model with the improvement on capital efficiency. When the lender's money is not being borrowed, it does not just lie in the pool, instead it got deposited to Platypus booster (Vector, Echidna) to earn rewards.
 
-Try running some of the following tasks:
+## User Operations
 
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-npx hardhat help
-REPORT_GAS=true npx hardhat test
-npx hardhat coverage
-npx hardhat run scripts/deploy.ts
-TS_NODE_FILES=true npx ts-node scripts/deploy.ts
-npx eslint '**/*.{js,ts}'
-npx eslint '**/*.{js,ts}' --fix
-npx prettier '**/*.{json,sol,md}' --check
-npx prettier '**/*.{json,sol,md}' --write
-npx solhint 'contracts/**/*.sol'
-npx solhint 'contracts/**/*.sol' --fix
-```
+- Deposit: Deposit stablecoins and mint gToken. gToken is like cToken whose value appreciates over time.
+- Set collateral: Set the deposited asset as collaterals in order to borrow other assets.
+- Borrow: User can borrow the asset it wants to borrow. The amount is limited by the collateral factor
+- Liquidate: When the collateral value relative the debt value decrease to below the threshold, the borrowing position become liquidatable. Anyone can liquidate the position and get the collateral in discount.
 
+## Deployment
+
+### GUP Token
+
+- Deploy `Gup` contract
+
+### Guptroller
+
+- Depoly `Unitroller` contract as proxy (Gup address is needed for constructor)
+- Deploy `Guptroller` contract as implementation
+- From `Unitroller` set pending implementation and accept it
+
+### Interest Rate Model
+
+- Deploy `JumpRateModelV2` with the params
+
+### gToken / gEther
+
+- Deploy `GToken` / `gEther`
+- Initialize with the contract with guptroller and interest rate model address
+- Different token can have different interest rate model
+
+### Price Oracle
+
+- Deploy the oracle for Guptroller
+
+## TODO
+
+- Write test
+- Integrate with Vector finance
+    - deposit
+    - redeem
+    - claim reward
+    - liquidation
+- Interest rate model design (borrow interest >= booster reward)
+- Set up oracle using chainlink
+- Governance token mechanism
 # Etherscan verification
 
 To try out Etherscan verification, you first need to deploy a contract to an Ethereum network that's supported by

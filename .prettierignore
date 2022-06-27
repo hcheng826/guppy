@@ -3,3 +3,6 @@ artifacts
 cache
 coverage*
 gasReporterOutput.json
+*.sol
+.solhint.json
+README.md
