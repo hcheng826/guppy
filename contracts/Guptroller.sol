@@ -1373,7 +1373,7 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
      * @return The amount of GUP which was NOT transferred to the user
      */
     function grantGupInternal(address user, uint amount) internal returns (uint) {
-        Gup gup = Gup(getGupAddress());
+        Gup gup = Gup(gupAddress);
         uint gupRemaining = gup.balanceOf(address(this));
         if (amount > 0 && amount <= gupRemaining) {
             gup.transfer(user, amount);
@@ -1459,13 +1459,5 @@ contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerError
 
     function getBlockNumber() virtual public view returns (uint) {
         return block.number;
-    }
-
-    /**
-     * @notice Return the address of the GUP token
-     * @return The address of GUP
-     */
-    function getGupAddress() virtual public view returns (address) {
-        return 0xc00e94Cb662C3520282E6f5717214004A7f26888;
     }
 }

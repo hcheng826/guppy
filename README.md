@@ -11,10 +11,40 @@ It builds on top of the Compound model with the improvement on capital efficienc
 - Borrow: User can borrow the asset it wants to borrow. The amount is limited by the collateral factor
 - Liquidate: When the collateral value relative the debt value decrease to below the threshold, the borrowing position become liquidatable. Anyone can liquidate the position and get the collateral in discount.
 
+## Deployment
+
+### GUP Token
+
+- Deploy `Gup` contract
+
+### Guptroller
+
+- Depoly `Unitroller` contract as proxy (Gup address is needed for constructor)
+- Deploy `Guptroller` contract as implementation
+- From `Unitroller` set pending implementation and accept it
+
+### Interest Rate Model
+
+- Deploy `JumpRateModelV2` with the params
+
+### gToken
+
+- Deploy `GToken`
+- Initialize with the contract with guptroller and interest rate model address
+- Different token can have different interest rate model
+
+### gEther
+
+- Deploy `GEther` (should be AVAX actually) with the guptroller and interest rate model address
+
+### Price Oracle
+
+- Deploy the oracle for Guptroller
+
 ## Concepts
 
 - Borrow interest rate vs untilization: The higher the utilization, the higher the borrow interest rate. Note that borrow interest rate needs to be >= booster reward to be attractive to the lenders.
--
+
 ## Contract Structures
 
 - gToken.sol

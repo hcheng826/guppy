@@ -30,9 +30,10 @@ contract Unitroller is UnitrollerAdminStorage, GuptrollerErrorReporter {
       */
     event NewAdmin(address oldAdmin, address newAdmin);
 
-    constructor() public {
+    constructor(address gupAddress) {
         // Set admin to caller
         admin = msg.sender;
+        gupAddress = gupAddress;
     }
 
     /*** Admin Functions ***/
@@ -133,7 +134,7 @@ contract Unitroller is UnitrollerAdminStorage, GuptrollerErrorReporter {
      * It returns to the external caller whatever the implementation returns
      * or forwards reverts.
      */
-    fallback() payable external {
+    fallback() external payable {
         // delegate all other functions to current implementation
         (bool success, ) = guptrollerImplementation.delegatecall(msg.data);
 
