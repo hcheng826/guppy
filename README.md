@@ -27,29 +27,27 @@ It builds on top of the Compound model with the improvement on capital efficienc
 
 - Deploy `JumpRateModelV2` with the params
 
-### gToken
+### gToken / gEther
 
-- Deploy `GToken`
+- Deploy `GToken` / `gEther`
 - Initialize with the contract with guptroller and interest rate model address
 - Different token can have different interest rate model
-
-### gEther
-
-- Deploy `GEther` (should be AVAX actually) with the guptroller and interest rate model address
 
 ### Price Oracle
 
 - Deploy the oracle for Guptroller
 
-## Concepts
+## TODO
 
-- Borrow interest rate vs untilization: The higher the utilization, the higher the borrow interest rate. Note that borrow interest rate needs to be >= booster reward to be attractive to the lenders.
-
-## Contract Structures
-
-- gToken.sol
-- Guptroller.sol
-
+- Write test
+- Integrate with Vector finance
+    - deposit
+    - redeem
+    - claim reward
+    - liquidation
+- Interest rate model design (borrow interest >= booster reward)
+- Set up oracle using chainlink
+- Governance token mechanism
 # Etherscan verification
 
 To try out Etherscan verification, you first need to deploy a contract to an Ethereum network that's supported by
