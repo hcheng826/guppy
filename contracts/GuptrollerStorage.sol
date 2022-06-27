@@ -95,7 +95,7 @@ contract GuptrollerV2Storage is GuptrollerV1Storage {
 
 contract GuptrollerV3Storage is GuptrollerV2Storage {
     struct GupMarketState {
-        // The market's last updated compBorrowIndex or compSupplyIndex
+        // The market's last updated gupBorrowIndex or gupSupplyIndex
         uint224 index;
 
         // The block number the index was last updated at
@@ -106,25 +106,25 @@ contract GuptrollerV3Storage is GuptrollerV2Storage {
     GToken[] public allMarkets;
 
     /// @notice The rate at which the flywheel distributes COMP, per block
-    uint public compRate;
+    uint public gupRate;
 
-    /// @notice The portion of compRate that each market currently receives
-    mapping(address => uint) public compSpeeds;
+    /// @notice The portion of gupRate that each market currently receives
+    mapping(address => uint) public gupSpeeds;
 
     /// @notice The COMP market supply state for each market
-    mapping(address => GupMarketState) public compSupplyState;
+    mapping(address => GupMarketState) public gupSupplyState;
 
     /// @notice The COMP market borrow state for each market
-    mapping(address => GupMarketState) public compBorrowState;
+    mapping(address => GupMarketState) public gupBorrowState;
 
     /// @notice The COMP borrow index for each market for each supplier as of the last time they accrued COMP
-    mapping(address => mapping(address => uint)) public compSupplierIndex;
+    mapping(address => mapping(address => uint)) public gupSupplierIndex;
 
     /// @notice The COMP borrow index for each market for each borrower as of the last time they accrued COMP
-    mapping(address => mapping(address => uint)) public compBorrowerIndex;
+    mapping(address => mapping(address => uint)) public gupBorrowerIndex;
 
     /// @notice The COMP accrued but not yet transferred to each user
-    mapping(address => uint) public compAccrued;
+    mapping(address => uint) public gupAccrued;
 }
 
 contract GuptrollerV4Storage is GuptrollerV3Storage {
@@ -137,18 +137,18 @@ contract GuptrollerV4Storage is GuptrollerV3Storage {
 
 contract GuptrollerV5Storage is GuptrollerV4Storage {
     /// @notice The portion of COMP that each contributor receives per block
-    mapping(address => uint) public compContributorSpeeds;
+    mapping(address => uint) public gupContributorSpeeds;
 
     /// @notice Last block at which a contributor's COMP rewards have been allocated
     mapping(address => uint) public lastContributorBlock;
 }
 
 contract GuptrollerV6Storage is GuptrollerV5Storage {
-    /// @notice The rate at which comp is distributed to the corresponding borrow market (per block)
-    mapping(address => uint) public compBorrowSpeeds;
+    /// @notice The rate at which gup is distributed to the corresponding borrow market (per block)
+    mapping(address => uint) public gupBorrowSpeeds;
 
-    /// @notice The rate at which comp is distributed to the corresponding supply market (per block)
-    mapping(address => uint) public compSupplySpeeds;
+    /// @notice The rate at which gup is distributed to the corresponding supply market (per block)
+    mapping(address => uint) public gupSupplySpeeds;
 }
 
 contract GuptrollerV7Storage is GuptrollerV6Storage {
@@ -156,5 +156,5 @@ contract GuptrollerV7Storage is GuptrollerV6Storage {
     bool public proposal65FixExecuted;
 
     /// @notice Accounting storage mapping account addresses to how much COMP they owe the protocol.
-    mapping(address => uint) public compReceivable;
+    mapping(address => uint) public gupReceivable;
 }

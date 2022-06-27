@@ -5,7 +5,7 @@ contract GuptrollerErrorReporter {
     enum Error {
         NO_ERROR,
         UNAUTHORIZED,
-        COMPTROLLER_MISMATCH,
+        GUPTROLLER_MISMATCH,
         INSUFFICIENT_SHORTFALL,
         INSUFFICIENT_LIQUIDITY,
         INVALID_CLOSE_FACTOR,
