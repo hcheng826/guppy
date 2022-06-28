@@ -39,6 +39,7 @@ It builds on top of the Compound model with the improvement on capital efficienc
 
 ## TODO
 
+- Write up deployment script
 - Write test
 - Integrate with Vector finance
     - deposit

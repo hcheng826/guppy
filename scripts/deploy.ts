@@ -5,6 +5,7 @@
 // Runtime Environment's members available in the global scope.
 import { ethers } from 'hardhat';
 
+/*
 async function main() {
     // Hardhat always runs the compile task when running scripts with its command
     // line interface.
@@ -28,3 +29,24 @@ main().catch((error) => {
     console.error(error);
     process.exitCode = 1;
 });
+*/
+
+function saveContractAddress(contractName: string, address: string) {
+    console.log(`${contractName} is deploted to: ${address}`);
+}
+
+export async function deployGup(adminAddr: string) {
+    const gupFactory = await ethers.getContractFactory('Gup');
+    const gup = await gupFactory.deploy(adminAddr);
+
+    await gup.deployed();
+
+    saveContractAddress('Gup', gup.address);
+
+    return gup;
+}
+
+export async function deployAll() {
+    const [deployer] = await ethers.getSigners();
+    const gup = await deployGup(deployer.address);
+}
