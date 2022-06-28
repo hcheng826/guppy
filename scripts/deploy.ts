@@ -3,6 +3,7 @@
 //
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
+import assert from 'assert';
 import { ethers } from 'hardhat';
 
 /*
@@ -32,7 +33,7 @@ main().catch((error) => {
 */
 
 function saveContractAddress(contractName: string, address: string) {
-    console.log(`${contractName} is deploted to: ${address}`);
+    console.log(`${contractName} is deployed to: ${address}`);
 }
 
 export async function deployGup(adminAddr: string) {
@@ -46,7 +47,32 @@ export async function deployGup(adminAddr: string) {
     return gup;
 }
 
+export async function deployGuptroller(gupAddr: string) {
+    const unitrollerFactory = await ethers.getContractFactory('Unitroller');
+    const unitroller = await unitrollerFactory.deploy(gupAddr);
+    await unitroller.deployed();
+
+    saveContractAddress('Unitroller', unitroller.address);
+
+    const guptrollerFactory = await ethers.getContractFactory('Guptroller');
+    const guptroller = await guptrollerFactory.deploy();
+    await guptroller.deployed();
+
+    saveContractAddress('Guptroller', guptroller.address);
+
+    const setPendingImplementationTx = await unitroller._setPendingImplementation(guptroller.address);
+    await setPendingImplementationTx.wait();
+
+    const becomeTx = await guptroller._become(unitroller.address);
+    await becomeTx.wait();
+
+    assert((await unitroller.guptrollerImplementation()) === guptroller.address);
+
+    return unitroller;
+}
+
 export async function deployAll() {
     const [deployer] = await ethers.getSigners();
     const gup = await deployGup(deployer.address);
+    const guptroller = await deployGuptroller(gup.address);
 }
