@@ -3,6 +3,7 @@
 //
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
+import { showThrottleMessage } from '@ethersproject/providers';
 import assert from 'assert';
 import { ethers } from 'hardhat';
 
@@ -68,11 +69,35 @@ export async function deployGuptroller(gupAddr: string) {
 
     assert((await unitroller.guptrollerImplementation()) === guptroller.address);
 
+    // return proxy address
     return unitroller;
+}
+
+export async function deployInterestRateModel(
+    baseRatePerYear: number,
+    multiplierPerYear: number,
+    jumpMultiplierPerYear: number,
+    kink_: number,
+    owner: string
+) {
+    const interestRateModelFactory = await ethers.getContractFactory('JumpRateModelV2');
+    const interestRateModel = await interestRateModelFactory.deploy(
+        ethers.utils.parseEther(baseRatePerYear.toString()),
+        ethers.utils.parseEther(multiplierPerYear.toString()),
+        ethers.utils.parseEther(jumpMultiplierPerYear.toString()),
+        ethers.utils.parseEther(kink_.toString()),
+        owner
+    );
+    await interestRateModel.deployed();
+
+    saveContractAddress('InterestRateModel', interestRateModel.address);
+
+    return interestRateModel;
 }
 
 export async function deployAll() {
     const [deployer] = await ethers.getSigners();
     const gup = await deployGup(deployer.address);
     const guptroller = await deployGuptroller(gup.address);
+    const interestRateModel = await deployInterestRateModel(0.05, 0.45, 5, 0.95, deployer.address);
 }

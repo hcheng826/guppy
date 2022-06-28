@@ -26,6 +26,8 @@ It builds on top of the Compound model with the improvement on capital efficienc
 ### Interest Rate Model
 
 - Deploy `JumpRateModelV2` with the params
+- ref1: https://github.com/compound-finance/compound-protocol/blob/a3214f67b73310d547e00fc578e8355911c9d376/tests/Tokens/cTokenTest.js#L70
+- ref2: https://observablehq.com/@jflatow/compound-interest-rates
 
 ### gToken / gEther
 
@@ -46,7 +48,7 @@ It builds on top of the Compound model with the improvement on capital efficienc
     - redeem
     - claim reward
     - liquidation
-- Interest rate model design (borrow interest >= booster reward)
+- Tune interest rate model (borrow interest >= booster reward)
 - Set up oracle using chainlink
 - Governance token mechanism
 # Etherscan verification
