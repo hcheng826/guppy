@@ -26,6 +26,10 @@ const config: HardhatUserConfig = {
     solidity: '0.8.10',
     networks: {
         hardhat: {
+            forking: {
+                url: 'https://api.avax.network/ext/bc/C/rpc',
+                blockNumber: 16626376
+            },
             allowUnlimitedContractSize: true
         },
         ropsten: {

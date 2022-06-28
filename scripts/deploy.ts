@@ -3,7 +3,6 @@
 //
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
-import { showThrottleMessage } from '@ethersproject/providers';
 import assert from 'assert';
 import { ethers } from 'hardhat';
 
@@ -95,9 +94,83 @@ export async function deployInterestRateModel(
     return interestRateModel;
 }
 
+export async function deployGErc20(
+    underlying_: string,
+    guptroller_: string,
+    interestRateModel_: string,
+    initialExchangeRateMantissa_: number,
+    name_: string,
+    symbol_: string,
+    decimals_: number,
+    admin_: string
+) {
+    const gErc20Factory = await ethers.getContractFactory('GErc20Immutable');
+    const gErc20 = await gErc20Factory.deploy(
+        underlying_,
+        guptroller_,
+        interestRateModel_,
+        initialExchangeRateMantissa_,
+        name_,
+        symbol_,
+        decimals_,
+        admin_
+    );
+    await gErc20.deployed();
+
+    saveContractAddress(symbol_, gErc20.address);
+
+    return gErc20;
+}
+
+export async function deployGEther(
+    guptroller_: string,
+    interestRateModel_: string,
+    initialExchangeRateMantissa_: number,
+    name_: string,
+    symbol_: string,
+    decimals_: number,
+    admin_: string
+) {
+    const gEtherFactory = await ethers.getContractFactory('GEther');
+    const gEther = await gEtherFactory.deploy(
+        guptroller_,
+        interestRateModel_,
+        initialExchangeRateMantissa_,
+        name_,
+        symbol_,
+        decimals_,
+        admin_
+    );
+
+    saveContractAddress(symbol_, gEther.address);
+
+    return gEther;
+}
+
 export async function deployAll() {
     const [deployer] = await ethers.getSigners();
     const gup = await deployGup(deployer.address);
     const guptroller = await deployGuptroller(gup.address);
     const interestRateModel = await deployInterestRateModel(0.05, 0.45, 5, 0.95, deployer.address);
+
+    const gUSDC = await deployGErc20(
+        '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
+        guptroller.address,
+        interestRateModel.address,
+        1,
+        'guppy USDC',
+        'gUSDC',
+        18,
+        deployer.address
+    );
+
+    const gAVAX = await deployGEther(
+        guptroller.address,
+        interestRateModel.address,
+        1,
+        'guppy AVAX',
+        'gAVAX',
+        18,
+        deployer.address
+    );
 }

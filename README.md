@@ -29,9 +29,9 @@ It builds on top of the Compound model with the improvement on capital efficienc
 - ref1: https://github.com/compound-finance/compound-protocol/blob/a3214f67b73310d547e00fc578e8355911c9d376/tests/Tokens/cTokenTest.js#L70
 - ref2: https://observablehq.com/@jflatow/compound-interest-rates
 
-### gToken / gEther
+### gToken (gErc20 and gEther)
 
-- Deploy `GToken` / `gEther`
+- Deploy `gErc20` and `gEther`
 - Initialize with the contract with guptroller and interest rate model address
 - Different token can have different interest rate model
 
