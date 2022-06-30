@@ -17,11 +17,16 @@ It builds on top of the Compound model with the improvement on capital efficienc
 
 - Deploy `Gup` contract
 
+### Price Oracle
+
+- Deploy the oracle for Guptroller
 ### Guptroller
 
 - Depoly `Unitroller` contract as proxy (Gup address is needed for constructor)
 - Deploy `Guptroller` contract as implementation
 - From `Unitroller` set pending implementation and accept it
+- Set price oracle
+- Set close factor, collateral factor, liquidation incentive
 
 ### Interest Rate Model
 
@@ -35,10 +40,8 @@ It builds on top of the Compound model with the improvement on capital efficienc
 - Initialize with the contract with guptroller and interest rate model address
 - Different token can have different interest rate model
 
-### Price Oracle
-
-- Deploy the oracle for Guptroller
-
+## Set param
+- Set close factor and liquidation incentive
 ## TODO
 
 - Write up deployment script
