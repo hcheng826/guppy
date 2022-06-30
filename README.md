@@ -17,35 +17,41 @@ It builds on top of the Compound model with the improvement on capital efficienc
 
 - Deploy `Gup` contract
 
+### Price Oracle
+
+- Deploy the oracle for Guptroller
 ### Guptroller
 
 - Depoly `Unitroller` contract as proxy (Gup address is needed for constructor)
 - Deploy `Guptroller` contract as implementation
 - From `Unitroller` set pending implementation and accept it
+- Set price oracle
+- Set close factor, collateral factor, liquidation incentive
 
 ### Interest Rate Model
 
 - Deploy `JumpRateModelV2` with the params
+- ref1: https://github.com/compound-finance/compound-protocol/blob/a3214f67b73310d547e00fc578e8355911c9d376/tests/Tokens/cTokenTest.js#L70
+- ref2: https://observablehq.com/@jflatow/compound-interest-rates
 
-### gToken / gEther
+### gToken (gErc20 and gEther)
 
-- Deploy `GToken` / `gEther`
+- Deploy `gErc20` and `gEther`
 - Initialize with the contract with guptroller and interest rate model address
 - Different token can have different interest rate model
 
-### Price Oracle
-
-- Deploy the oracle for Guptroller
-
+## Set param
+- Set close factor and liquidation incentive
 ## TODO
 
+- Write up deployment script
 - Write test
 - Integrate with Vector finance
     - deposit
     - redeem
     - claim reward
     - liquidation
-- Interest rate model design (borrow interest >= booster reward)
+- Tune interest rate model (borrow interest >= booster reward)
 - Set up oracle using chainlink
 - Governance token mechanism
 # Etherscan verification

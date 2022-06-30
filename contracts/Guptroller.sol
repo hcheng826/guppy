@@ -10,8 +10,8 @@ import "./Unitroller.sol";
 import "./Governance/Gup.sol";
 
 /**
- * @title Gupound's Guptroller Contract
- * @author Gupound
+ * @title Compound's Guptroller Contract
+ * @author Compound
  */
 contract Guptroller is GuptrollerV7Storage, GuptrollerInterface, GuptrollerErrorReporter, ExponentialNoError {
     /// @notice Emitted when an admin supports a market

@@ -10,12 +10,17 @@ contract SimplePriceOracle is PriceOracle {
 
     function _getUnderlyingAddress(GToken gToken) private view returns (address) {
         address asset;
-        if (compareStrings(gToken.symbol(), "cETH")) {
+        if (compareStrings(gToken.symbol(), "gAVAX")) {
             asset = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
         } else {
             asset = address(GErc20(address(gToken)).underlying());
         }
         return asset;
+    }
+
+    function mockPrice() external {
+        prices[0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE] = 17300000000000000000;
+        prices[0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E] = 1000000000000000000;
     }
 
     function getUnderlyingPrice(GToken gToken) public override view returns (uint) {
