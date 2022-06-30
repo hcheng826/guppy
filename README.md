@@ -1,5 +1,7 @@
 # Guppy
 
+Guppy is a fish that has a different mechanism of breeding from other normal fish species. Just like Platypus and Echidna.
+
 Guppy is a project built on top of the Avalanche Platypus ecosystem. It allows the users who want to provide liquidity on Platypus to improve their captical efficiency. The deposited liquidity (stablecoins) can be served as collaterals and the user can borrow more stablecoins whlie the original deposited asset still earning rewards.
 
 It builds on top of the Compound model with the improvement on capital efficiency. When the lender's money is not being borrowed, it does not just lie in the pool, instead it got deposited to Platypus booster (Vector, Echidna) to earn rewards.
@@ -11,7 +13,7 @@ It builds on top of the Compound model with the improvement on capital efficienc
 - Borrow: User can borrow the asset it wants to borrow. The amount is limited by the collateral factor
 - Liquidate: When the collateral value relative the debt value decrease to below the threshold, the borrowing position become liquidatable. Anyone can liquidate the position and get the collateral in discount.
 
-## Deployment
+## Deployment Process
 
 ### GUP Token
 
@@ -40,20 +42,20 @@ It builds on top of the Compound model with the improvement on capital efficienc
 - Initialize with the contract with guptroller and interest rate model address
 - Different token can have different interest rate model
 
-## Set param
+### Set params
 - Set close factor and liquidation incentive
 ## TODO
 
-- Write up deployment script
-- Write test
-- Integrate with Vector finance
-    - deposit
-    - redeem
-    - claim reward
-    - liquidation
-- Tune interest rate model (borrow interest >= booster reward)
-- Set up oracle using chainlink
-- Governance token mechanism
+- [x] Write up deployment script
+- [ ] Write test
+- [ ] Integrate with Vector finance
+    - [ ] deposit
+    - [ ] redeem
+    - [ ] claim reward
+    - [ ] liquidation
+- [ ] Tune interest rate model (borrow interest >= booster reward)
+- [ ] Set up oracle using chainlink
+- [ ] Governance token mechanism
 # Etherscan verification
 
 To try out Etherscan verification, you first need to deploy a contract to an Ethereum network that's supported by
