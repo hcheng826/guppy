@@ -9,6 +9,7 @@ It builds on top of the Compound model with the improvement on capital efficienc
 ## User Operations
 
 - Deposit: Deposit stablecoins and mint gToken. gToken is like cToken whose value appreciates over time.
+- Redeem: Burn the gToken and get underlying token based on the exchange rate.
 - Set collateral: Set the deposited asset as collaterals in order to borrow other assets.
 - Borrow: User can borrow the asset it wants to borrow. The amount is limited by the collateral factor
 - Liquidate: When the collateral value relative the debt value decrease to below the threshold, the borrowing position become liquidatable. Anyone can liquidate the position and get the collateral in discount.

@@ -253,4 +253,14 @@ export async function deployAll() {
         ethers.utils.parseEther('1.08')
     );
     await setLiquidationIncentiveTx.wait();
+
+    return {
+        gup,
+        priceOracle,
+        guptroller,
+        interestRateModel,
+        guptrollerDelegateCaller,
+        gUSDC,
+        gAVAX
+    };
 }
