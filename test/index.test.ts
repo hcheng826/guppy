@@ -46,6 +46,8 @@ describe('Guppy', function () {
     it('deployment', async function () {
         ({ gup, priceOracle, guptroller, interestRateModel, guptrollerDelegateCaller, gUSDC, gAVAX } =
             await deployAll());
+        gUSDC = gUSDC.connect(user);
+        gAVAX = gAVAX.connect(user);
     });
 
     it('deposit USDC', async function () {
@@ -55,7 +57,7 @@ describe('Guppy', function () {
         const approveTx = await usdc.connect(user).approve(gUSDC.address, usdcAmount);
         await approveTx.wait();
 
-        const mintTx = await gUSDC.connect(user).mint(usdcAmount);
+        const mintTx = await gUSDC.mint(usdcAmount);
         await mintTx.wait();
 
         expect(await usdc.balanceOf(user.address)).to.eql(ethers.constants.Zero);
@@ -65,13 +67,50 @@ describe('Guppy', function () {
     it('deposit AVAX', async function () {
         const avaxAmount = ethers.utils.parseEther('1000');
 
-        const mintTx = await gAVAX.connect(user).mint({ value: avaxAmount });
+        const mintTx = await gAVAX.mint({ value: avaxAmount });
         await mintTx.wait();
 
         expect(await gAVAX.balanceOf(user.address)).to.eql(avaxAmount);
     });
 
-    it('redeem', async function () {});
+    it('redeem USDC', async function () {
+        const amount100 = ethers.utils.parseUnits('100', USDC_DECIMAL);
+
+        const redeemTx = await gUSDC.redeem(amount100);
+        await redeemTx.wait();
+
+        expect(await usdc.balanceOf(user.address)).to.eql(amount100);
+        expect(await gUSDC.balanceOf(user.address)).to.eql(ethers.utils.parseUnits('900', USDC_DECIMAL));
+
+        const redeemUnderlyingTx = await gUSDC.redeemUnderlying(amount100);
+        await redeemUnderlyingTx.wait();
+
+        expect(await usdc.balanceOf(user.address)).to.eql(ethers.utils.parseUnits('200', USDC_DECIMAL));
+        expect(await gUSDC.balanceOf(user.address)).to.eql(ethers.utils.parseUnits('800', USDC_DECIMAL));
+    });
+
+    it('redeem AVAX', async function () {
+        const oldBalance = await ethers.provider.getBalance(user.address);
+
+        const redeemTx = await gAVAX.redeem(ethers.utils.parseEther('100'));
+        const redeemRc = await redeemTx.wait();
+
+        const newBalance = await ethers.provider.getBalance(user.address);
+        const gasCost = redeemRc.gasUsed.mul(redeemRc.effectiveGasPrice);
+
+        expect(newBalance.sub(oldBalance).add(gasCost)).to.eql(ethers.utils.parseEther('100'));
+        expect(await gAVAX.balanceOf(user.address)).to.eql(ethers.utils.parseEther('900'));
+
+        const redeemUnderlyingTx = await gAVAX.redeemUnderlying(ethers.utils.parseEther('100'));
+        const redeemUnderlyingRc = await redeemUnderlyingTx.wait();
+
+        const newBalance2 = await ethers.provider.getBalance(user.address);
+        const gasCost2 = redeemUnderlyingRc.gasUsed.mul(redeemUnderlyingRc.effectiveGasPrice);
+
+        expect(newBalance2.sub(newBalance).add(gasCost2)).to.eql(ethers.utils.parseEther('100'));
+        expect(await gAVAX.balanceOf(user.address)).to.eql(ethers.utils.parseEther('800'));
+    });
+
     it('check exchange rate after some blocks', async function () {});
     it('set collateral', async function () {});
     it('borrow', async function () {});
