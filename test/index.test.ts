@@ -55,14 +55,22 @@ describe('Guppy', function () {
         const approveTx = await usdc.connect(user).approve(gUSDC.address, usdcAmount);
         await approveTx.wait();
 
-        const mintTx = await gUSDC.connect(user).mint(1000 * 1e6);
+        const mintTx = await gUSDC.connect(user).mint(usdcAmount);
         await mintTx.wait();
 
         expect(await usdc.balanceOf(user.address)).to.eql(ethers.constants.Zero);
         expect(await gUSDC.balanceOf(user.address)).to.eql(usdcAmount);
     });
 
-    it('deposit AVAX', async function () {});
+    it('deposit AVAX', async function () {
+        const avaxAmount = ethers.utils.parseEther('1000');
+
+        const mintTx = await gAVAX.connect(user).mint({ value: avaxAmount });
+        await mintTx.wait();
+
+        expect(await gAVAX.balanceOf(user.address)).to.eql(avaxAmount);
+    });
+
     it('redeem', async function () {});
     it('check exchange rate after some blocks', async function () {});
     it('set collateral', async function () {});
