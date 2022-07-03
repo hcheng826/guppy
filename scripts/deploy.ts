@@ -1,12 +1,12 @@
 import assert from 'assert';
-import { Contract } from 'ethers';
+import { BigNumber, Contract } from 'ethers';
 import { ethers } from 'hardhat';
 
 interface gTokenInitArg {
     underlying_?: string;
     guptroller_: string;
     interestRateModel_: string;
-    initialExchangeRateMantissa_: number;
+    initialExchangeRateMantissa_: BigNumber;
     name_: string;
     symbol_: string;
     decimals_: number;
@@ -89,67 +89,6 @@ export async function deployInterestRateModel(
     return interestRateModel;
 }
 
-export async function deployGErc20(
-    underlying_: string,
-    guptroller_: string,
-    interestRateModel_: string,
-    initialExchangeRateMantissa_: number,
-    name_: string,
-    symbol_: string,
-    decimals_: number,
-    admin_: string,
-    guptrollerDelegateCaller: Contract
-) {
-    const gErc20Factory = await ethers.getContractFactory('GErc20Immutable');
-    const gErc20 = await gErc20Factory.deploy(
-        underlying_,
-        guptroller_,
-        interestRateModel_,
-        initialExchangeRateMantissa_,
-        name_,
-        symbol_,
-        decimals_,
-        admin_
-    );
-    await gErc20.deployed();
-
-    const supportMarketTx = await guptrollerDelegateCaller._supportMarket(gErc20.address);
-    await supportMarketTx.wait();
-
-    saveContractAddress(symbol_, gErc20.address);
-
-    return gErc20;
-}
-
-export async function deployGEther(
-    guptroller_: string,
-    interestRateModel_: string,
-    initialExchangeRateMantissa_: number,
-    name_: string,
-    symbol_: string,
-    decimals_: number,
-    admin_: string,
-    guptrollerDelegateCaller: Contract
-) {
-    const gEtherFactory = await ethers.getContractFactory('GEther');
-    const gEther = await gEtherFactory.deploy(
-        guptroller_,
-        interestRateModel_,
-        initialExchangeRateMantissa_,
-        name_,
-        symbol_,
-        decimals_,
-        admin_
-    );
-
-    const supportMarketTx = await guptrollerDelegateCaller._supportMarket(gEther.address);
-    await supportMarketTx.wait();
-
-    saveContractAddress(symbol_, gEther.address);
-
-    return gEther;
-}
-
 export async function deployGToken(
     isEther: boolean = false,
     initArg: gTokenInitArg,
@@ -220,10 +159,26 @@ export async function deployAll() {
             underlying_: '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
             guptroller_: guptroller.address,
             interestRateModel_: interestRateModel.address,
-            initialExchangeRateMantissa_: 1,
+            initialExchangeRateMantissa_: ethers.utils.parseEther('1'),
             name_: 'guppy USDC',
             symbol_: 'gUSDC',
-            decimals_: 18,
+            decimals_: 6,
+            admin_: deployer.address
+        },
+        0.84,
+        guptrollerDelegateCaller
+    );
+
+    const gUSDT = await deployGToken(
+        false,
+        {
+            underlying_: '0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7',
+            guptroller_: guptroller.address,
+            interestRateModel_: interestRateModel.address,
+            initialExchangeRateMantissa_: ethers.utils.parseEther('1'),
+            name_: 'guppy USDT',
+            symbol_: 'gUSDT',
+            decimals_: 6,
             admin_: deployer.address
         },
         0.84,
@@ -235,7 +190,7 @@ export async function deployAll() {
         {
             guptroller_: guptroller.address,
             interestRateModel_: interestRateModel.address,
-            initialExchangeRateMantissa_: 1,
+            initialExchangeRateMantissa_: ethers.utils.parseEther('1'),
             name_: 'guppy AVAX',
             symbol_: 'gAVAX',
             decimals_: 18,
@@ -253,4 +208,15 @@ export async function deployAll() {
         ethers.utils.parseEther('1.08')
     );
     await setLiquidationIncentiveTx.wait();
+
+    return {
+        gup,
+        priceOracle,
+        guptroller,
+        interestRateModel,
+        guptrollerDelegateCaller,
+        gUSDC,
+        gUSDT,
+        gAVAX
+    };
 }
