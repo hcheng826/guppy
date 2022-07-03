@@ -14,9 +14,10 @@ describe('Guppy', function () {
         interestRateModel: Contract,
         guptrollerDelegateCaller: Contract,
         gUSDC: Contract,
+        gUSDT: Contract,
         gAVAX: Contract;
     let deployer: SignerWithAddress, user: SignerWithAddress;
-    let usdc: Contract;
+    let USDC: Contract, USDT: Contract;
 
     before(async function () {
         [deployer, user] = await ethers.getSigners();
@@ -27,15 +28,24 @@ describe('Guppy', function () {
         });
 
         const impersonatedSigner = await ethers.getSigner('0x42d6Ce661bB2e5F5cc639E7BEFE74Ff9Fd649541');
-        usdc = await ethers.getContractAtFromArtifact(
+        USDC = await ethers.getContractAtFromArtifact(
             require('../artifacts/contracts/EIP20Interface.sol/EIP20Interface.json'),
             '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E', // USDC contract address
             impersonatedSigner
         );
 
+        USDT = await ethers.getContractAtFromArtifact(
+            require('../artifacts/contracts/EIP20Interface.sol/EIP20Interface.json'),
+            '0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7', // USDT contract address
+            impersonatedSigner
+        );
+
         const transferAmount = ethers.utils.parseUnits('1000', USDC_DECIMAL);
-        const transferUsdcTx = await usdc.connect(impersonatedSigner).transfer(user.address, transferAmount);
+        const transferUsdcTx = await USDC.connect(impersonatedSigner).transfer(user.address, transferAmount);
         await transferUsdcTx.wait();
+
+        const transferUsdtTx = await USDT.connect(impersonatedSigner).transfer(deployer.address, transferAmount);
+        await transferUsdtTx.wait();
 
         await hre.network.provider.request({
             method: 'hardhat_stopImpersonatingAccount',
@@ -44,23 +54,25 @@ describe('Guppy', function () {
     });
 
     it('deployment', async function () {
-        ({ gup, priceOracle, guptroller, interestRateModel, guptrollerDelegateCaller, gUSDC, gAVAX } =
+        ({ gup, priceOracle, guptroller, interestRateModel, guptrollerDelegateCaller, gUSDC, gUSDT, gAVAX } =
             await deployAll());
         gUSDC = gUSDC.connect(user);
         gAVAX = gAVAX.connect(user);
+        gUSDT = gUSDT.connect(user);
+        guptrollerDelegateCaller = guptrollerDelegateCaller.connect(user);
     });
 
     it('deposit USDC', async function () {
         const usdcAmount = ethers.utils.parseUnits('1000', USDC_DECIMAL);
-        expect(await usdc.balanceOf(user.address)).to.eql(usdcAmount);
+        expect(await USDC.balanceOf(user.address)).to.eql(usdcAmount);
 
-        const approveTx = await usdc.connect(user).approve(gUSDC.address, usdcAmount);
+        const approveTx = await USDC.connect(user).approve(gUSDC.address, usdcAmount);
         await approveTx.wait();
 
         const mintTx = await gUSDC.mint(usdcAmount);
         await mintTx.wait();
 
-        expect(await usdc.balanceOf(user.address)).to.eql(ethers.constants.Zero);
+        expect(await USDC.balanceOf(user.address)).to.eql(ethers.constants.Zero);
         expect(await gUSDC.balanceOf(user.address)).to.eql(usdcAmount);
     });
 
@@ -79,13 +91,13 @@ describe('Guppy', function () {
         const redeemTx = await gUSDC.redeem(amount100);
         await redeemTx.wait();
 
-        expect(await usdc.balanceOf(user.address)).to.eql(amount100);
+        expect(await USDC.balanceOf(user.address)).to.eql(amount100);
         expect(await gUSDC.balanceOf(user.address)).to.eql(ethers.utils.parseUnits('900', USDC_DECIMAL));
 
         const redeemUnderlyingTx = await gUSDC.redeemUnderlying(amount100);
         await redeemUnderlyingTx.wait();
 
-        expect(await usdc.balanceOf(user.address)).to.eql(ethers.utils.parseUnits('200', USDC_DECIMAL));
+        expect(await USDC.balanceOf(user.address)).to.eql(ethers.utils.parseUnits('200', USDC_DECIMAL));
         expect(await gUSDC.balanceOf(user.address)).to.eql(ethers.utils.parseUnits('800', USDC_DECIMAL));
     });
 
@@ -111,9 +123,26 @@ describe('Guppy', function () {
         expect(await gAVAX.balanceOf(user.address)).to.eql(ethers.utils.parseEther('800'));
     });
 
+    it('set collateral', async function () {
+        // const borrowTx = await gUSDT.borrow(ethers.utils.parseUnits('20', 6));
+        // await borrowTx.wait();
+
+        // console.log(await gUSDC.balanceOf(user.address));
+        // console.log(await USDC.balanceOf(user.address));
+
+        // console.log(await guptrollerDelegateCaller.getAllMarkets());
+
+        // const enterMarketsTx = await guptrollerDelegateCaller.enterMarkets([gUSDT.address]);
+        // await enterMarketsTx.wait();
+    });
+    it('borrow USDC', async function () {
+        // deposit some USDT from deployer
+        // const depositUSDTTx = await USDT.connect(deployer).approve(gUSDT, ethers.utils.parseUnits('1000', 6));
+
+        // const borrowTx = await gUSDT.borrow(ethers.utils.parseUnits('20', 6));
+        // await borrowTx.wait();
+    });
     it('check exchange rate after some blocks', async function () {});
-    it('set collateral', async function () {});
-    it('borrow', async function () {});
     it('check borrow amount after some blocks', async function () {});
     it('liquidate', async function () {});
 });

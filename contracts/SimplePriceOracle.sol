@@ -20,7 +20,8 @@ contract SimplePriceOracle is PriceOracle {
 
     function mockPrice() external {
         prices[0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE] = 17300000000000000000;
-        prices[0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E] = 1000000000000000000;
+        prices[0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E] = 1000000;
+        prices[0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7] = 1000000;
     }
 
     function getUnderlyingPrice(GToken gToken) public override view returns (uint) {

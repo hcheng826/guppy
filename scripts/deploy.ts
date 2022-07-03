@@ -169,6 +169,22 @@ export async function deployAll() {
         guptrollerDelegateCaller
     );
 
+    const gUSDT = await deployGToken(
+        false,
+        {
+            underlying_: '0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7',
+            guptroller_: guptroller.address,
+            interestRateModel_: interestRateModel.address,
+            initialExchangeRateMantissa_: ethers.utils.parseEther('1'),
+            name_: 'guppy USDT',
+            symbol_: 'gUSDT',
+            decimals_: 6,
+            admin_: deployer.address
+        },
+        0.84,
+        guptrollerDelegateCaller
+    );
+
     const gAVAX = await deployGToken(
         true,
         {
@@ -200,6 +216,7 @@ export async function deployAll() {
         interestRateModel,
         guptrollerDelegateCaller,
         gUSDC,
+        gUSDT,
         gAVAX
     };
 }
