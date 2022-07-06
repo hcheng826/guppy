@@ -6,6 +6,13 @@ Guppy is a project built on top of the Avalanche Platypus ecosystem. It allows t
 
 It builds on top of the Compound model with the improvement on capital efficiency. When the lender's money is not being borrowed, it does not just lie in the pool, instead it got deposited to Platypus booster (Vector, Echidna) to earn rewards.
 
+## Diagram
+### Supply
+![image](https://user-images.githubusercontent.com/23033847/177586308-845f292e-c62e-434c-af90-2722028721a8.png)
+### Borrow
+![image](https://user-images.githubusercontent.com/23033847/177586390-b4c51aa1-e330-4583-9705-4bc9714bdd25.png)
+
+
 ## User Operations
 
 - Deposit: Deposit stablecoins and mint gToken. gToken is like cToken whose value appreciates over time.
